@@ -2,40 +2,29 @@
 
 <img width="1930" height="991" alt="image" src="https://github.com/user-attachments/assets/ee17c7c6-789d-45c3-9097-806f83ce051e" />
 
+### Performance Summary
 
+| Metric | Target | Result | Status |
+|---|---|---|---|
+| Gain @ 1 kHz | 38–42 dB | 44.5 dB | Fail |
+| Input Offset | ≤ 5 mV | -41.3 nV | Pass |
+| Slew Rate (Rise) | ≥ 5 V/µs | ~4.5e-7 V/µs | Fail |
+| Slew Rate (Fall) | ≥ 5 V/µs | ~4.5e-7 V/µs | Fail |
 
-Here is an analysis of your amplifier's performance based on the SPICE logs provided, compared against the "Op-Amp Wars" competition targets.
+### Notes
 
-### 1. Performance Summary
+- Input offset is extremely low, almost zero. This likely means the differential pair isn’t properly biased; the offset value is not meaningful in the current state.
+- Slew rate is near zero. The required value is in the order of MV/s, but the circuit is giving µV/s, indicating almost no current through the differential pair.
+- Gain is higher than target, which also points to very low device currents (gm too low, ro too high).
 
-| Metric | Competition Target | Your Result | Status |
-| :--- | :--- | :--- | :--- |
-| **Gain ($A_v$) @ 1kHz** | $40 \text{ dB} \pm 2 \text{ dB}$ (38-42 dB) | **$44.5 \text{ dB}$** | ❌ **FAIL** |
-| **Input Offset ($V_{os}$)** | $\le 5 \text{ mV}$ | **$-0.041 \mu\text{V}$** ($-41.3 \text{ nV}$) | ✅ **PASS** |
-| **Slew Rate (Rise)** | $\ge 5 \text{ V}/\mu\text{s}$ | **$0.00000045 \text{ V}/\mu\text{s}$** | ❌ **FAIL** |
-| **Slew Rate (Fall)** | $\ge 5 \text{ V}/\mu\text{s}$ | **$0.00000045 \text{ V}/\mu\text{s}$** | ❌ **FAIL** |
+### Main Issue
 
----
+The amplifier is **not biased correctly**. The tail current source is not supplying sufficient bias current.
 
-### 2. Analysis of Results
+### Next Steps
 
-#### What Was Achieved
-* **Input Offset ($V_{os}$):** You are **passing** the input offset specification by a massive margin. Your offset of $-41.3 \text{ nV}$ is almost zero.
-    * *Note:* This result is likely misleading. Such a perfect offset, combined with the other failures, suggests the circuit is not biased on, and you are just measuring a perfectly symmetrical (but non-functional) circuit.
+- Increase bias current in the input differential pair (adjust M11 / reference branch).
+- After fixing bias, re-evaluate slew rate and adjust compensation/bias levels accordingly.
+- Re-check and fine-tune gain after bias and SR are stable.
 
-#### What Was Not Achieved
-* **Slew Rate (SR):** This is a **critical failure**. Your slew rate is effectively **zero**. The target is $5,000,000 \text{ V/s}$, and your circuit is delivering $0.00045 \text{ V/s}$.
-* **Gain ($A_v$):** Your gain of $44.5 \text{ dB}$ is **too high** and outside the 38-42 dB target. This is also a symptom of the same core problem.
-
----
-
-### 3. Primary Limitation & Next Steps
-
-**The core limitation is that your op-amp has no DC bias current.**
-
-The transistors are not turned on, or are operating with femto-amps of current. This is the **only** problem you need to solve right now.
-
-1.  **Cause of SR Failure:** Slew Rate is $SR = I/C$. Your compensation capacitor `C3` (2.3p) is a fixed value, which means your tail current `I` (from **M11**) must be practically zero.
-2.  **Cause of Gain Failure:** Gain is $g_m \times r_o$. When transistors have no bias current, their transconductance ($g_m$) is zero, but their output impedance ($r_o$) becomes nearly infinite. This results in an artificially high (and unusable) gain.
-
-I feel that the drain currents are too less, and tweaking values should ideally give the required result. This has not been done due to improper management of time.
+**Flow:** Fix bias → Verify SR → Re-tune gain.
