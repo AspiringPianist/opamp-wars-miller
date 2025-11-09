@@ -38,8 +38,4 @@ The transistors are not turned on, or are operating with femto-amps of current. 
 1.  **Cause of SR Failure:** Slew Rate is $SR = I/C$. Your compensation capacitor `C3` (2.3p) is a fixed value, which means your tail current `I` (from **M11**) must be practically zero.
 2.  **Cause of Gain Failure:** Gain is $g_m \times r_o$. When transistors have no bias current, their transconductance ($g_m$) is zero, but their output impedance ($r_o$) becomes nearly infinite. This results in an artificially high (and unusable) gain.
 
-**✅ How to Fix:**
-Your entire focus must be on **fixing your bias circuit** (M1-M6 and R2) to deliver current to your main amplifier.
-
-* **Action:** Go to your `Draft1.asc` schematic and **decrease the value of R2**.
-* **Plan:** Your `R2` is `50`. Change it to **`25`** and re-run. If the `SR_RISE` value (currently `0.00045`) does not increase dramatically, change `R2` to **`10`**. Keep decreasing `R2` until your `SR_RISE` value in the log is greater than `5e6`.
+I feel that the drain currents are too less, and tweaking values should ideally give the required result. This has not been done due to improper management of time.
