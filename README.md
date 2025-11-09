@@ -1,5 +1,9 @@
 ## Op-Amp Performance Report (15:35 Run)
 
+<img width="1930" height="991" alt="image" src="https://github.com/user-attachments/assets/ee17c7c6-789d-45c3-9097-806f83ce051e" />
+
+
+
 Here is an analysis of your amplifier's performance based on the SPICE logs provided, compared against the "Op-Amp Wars" competition targets.
 
 ### 1. Performance Summary
